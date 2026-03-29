@@ -19,7 +19,3 @@ export function loadDictionary(): Dictionary {
   return dictionary
 }
 
-export function translate(word: string): string | null {
-  const dict = loadDictionary()
-  return dict[word] ?? null
-}

@@ -5,24 +5,32 @@ const openai = new OpenAI({
   timeout: 30000,
 })
 
-export async function refineTranslation(rawText: string): Promise<string> {
+export async function translateWithDictionary(
+  text: string,
+  entries: Record<string, string>
+): Promise<string> {
+  const dictText = Object.entries(entries)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
         role: 'system',
-        content: `あなたは翻訳アシスタントです。
-以下は人工言語から日本語に直訳されたテキストです。
-これを自然で読みやすい日本語に整えてください。
-元の意味を変えないでください。`,
+        content: `あなたは人工言語 fiXmArge の翻訳者です。
+以下の辞書を参照して、入力テキストを自然な日本語に翻訳してください。
+単語の語形変化（過去形・活用形など）も考慮してください。
+辞書にない単語はそのまま残してください。
+翻訳結果のみを返してください。
+
+辞書:
+${dictText}`,
       },
-      {
-        role: 'user',
-        content: rawText,
-      },
+      { role: 'user', content: text },
     ],
     temperature: 0.3,
   })
 
-  return response.choices[0]?.message?.content || rawText
+  return response.choices[0]?.message?.content || text
 }

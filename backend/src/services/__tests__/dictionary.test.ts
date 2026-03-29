@@ -1,19 +1,21 @@
 import { describe, it, expect } from 'vitest'
-import { translate } from '../dictionary'
+import { loadDictionary } from '../dictionary'
 
-describe('dictionary', () => {
-  it('辞書に存在する単語を翻訳できる', () => {
-    const result = translate("Iz'u")
-    expect(result).toBe('～は/～が')
+describe('loadDictionary', () => {
+  it('辞書を読み込める', () => {
+    const dict = loadDictionary()
+    expect(typeof dict).toBe('object')
+    expect(Object.keys(dict).length).toBeGreaterThan(0)
   })
 
-  it('辞書に存在しない単語はnullを返す', () => {
-    const result = translate('unknownword')
-    expect(result).toBeNull()
+  it('既知の単語が含まれている', () => {
+    const dict = loadDictionary()
+    expect(dict["Iz'u"]).toBeDefined()
   })
 
-  it('大文字小文字を区別する', () => {
-    const result = translate("iz'u")
-    expect(result).toBeNull()
+  it('2回呼び出してもキャッシュから同じオブジェクトを返す', () => {
+    const dict1 = loadDictionary()
+    const dict2 = loadDictionary()
+    expect(dict1).toBe(dict2)
   })
 })
